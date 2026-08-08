@@ -1,0 +1,22 @@
+LOTCASTER FACEBOOK HELPER
+========================
+
+The current helper folder is:
+C:\Users\Gage\Documents\Codex\LotCaster\facebook-helper
+
+To install it in Edge:
+
+1. Open edge://extensions
+2. Turn on Developer mode.
+3. Choose Load unpacked.
+4. Select the facebook-helper folder above.
+
+After LotCaster is updated:
+
+1. Return to edge://extensions.
+2. Click Reload on LotCaster Facebook Helper.
+3. Refresh the LotCaster app page.
+4. Confirm LotCaster reports helper version 1.8.0 or newer.
+
+Never let the helper press Publish. Final review and publication stay manual.
+

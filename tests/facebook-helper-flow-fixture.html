@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Facebook vehicle flow fixture</title>
+  <style>
+    body { font: 16px sans-serif; }
+    button, input, select, textarea { display: block; width: 320px; min-height: 36px; margin: 8px; }
+    label { display: block; margin: 8px; }
+  </style>
+</head>
+<body>
+  <main id="flow">
+    <button id="vehicle-type" type="button" aria-haspopup="listbox" aria-label="Vehicle type">Choose vehicle type</button>
+    <input id="vehicle-photos" type="file" accept="image/*" multiple hidden>
+    <div id="type-options" role="listbox" hidden>
+      <button type="button" role="option" data-type="Car/Truck">Car or truck</button>
+      <button type="button" role="option" data-type="Powersports">Powersports</button>
+    </div>
+  </main>
+  <script>
+    const flow = document.querySelector("#flow");
+    const typeButton = document.querySelector("#vehicle-type");
+    const typeOptions = document.querySelector("#type-options");
+    typeButton.addEventListener("click", () => {
+      typeButton.dataset.clicks = String(Number(typeButton.dataset.clicks || 0) + 1);
+      typeOptions.hidden = false;
+    });
+    typeOptions.addEventListener("click", (event) => {
+      const option = event.target.closest("[data-type]");
+      if (!option) return;
+      typeButton.textContent = option.textContent;
+      typeButton.setAttribute("aria-label", "Vehicle type");
+      typeButton.setAttribute("aria-selected", "true");
+      typeOptions.hidden = true;
+      renderVehicleForm();
+    });
+    // Facebook can expose the complete vehicle form while Vehicle type is
+    // still blank. LotCaster must not treat the other visible fields as proof
+    // that this required dropdown has already been selected.
+    renderVehicleForm();
+
+    function renderVehicleForm() {
+      if (document.querySelector("#vehicle-form")) return;
+      const form = document.createElement("section");
+      form.id = "vehicle-form";
+      form.innerHTML = `
+        <label>VIN<input name="vin"></label>
+        <label>Year<select name="year"><option>2020</option><option>2021</option><option>2024</option><option>2025</option></select></label>
+        <label>Make<select name="make"><option>Honda</option><option>Jeep</option><option>RAM</option><option>Cadillac</option><option>Chrysler</option></select></label>
+        <label>Model<input name="model"></label>
+        <label>Trim<input name="trim"></label>
+        <label>Body style<select name="body-style">
+          <option>Sedan</option><option>Truck</option><option>SUV</option><option>Van</option>
+          <option>Minivan</option><option>Sedan</option>
+        </select></label>
+        <label>Exterior color<input name="exterior-color"></label>
+        <label>Interior color<input name="interior-color"></label>
+        <label>Fuel type<select name="fuel-type"><option></option><option>Gasoline</option><option>Diesel</option><option>Hybrid</option><option>Electric</option></select></label>
+        <label>Vehicle condition<select name="condition"><option></option><option>Excellent</option></select></label>
+        <label>Price<input name="price"></label>
+        <label>Mileage<input name="mileage"></label>
+        <label id="listing-location" role="combobox" aria-label="Location" aria-expanded="false">Location Franklin</label>
+        <label>Description<textarea name="description"></textarea></label>`;
+      flow.append(form);
+      form.querySelector("#listing-location").addEventListener("click", (event) => {
+        event.currentTarget.dataset.clicks = String(Number(event.currentTarget.dataset.clicks || 0) + 1);
+      });
+    }
+  </script>
+</body>
+</html>

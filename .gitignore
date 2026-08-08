@@ -1,0 +1,28 @@
+# Local dealership data and credentials
+data/*.json
+data/*.csv
+data/*.html
+data/.lotcaster-master
+.env
+.env.*
+!.env.example
+
+# Generated browser-helper package
+public/walker-facebook-helper.zip
+
+# Local duplicate/backup copies
+archive/
+
+# Common OS/editor clutter
+Thumbs.db
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+data/*
+!data/README.md
+releases/*
+*.zip
+*.log
+node_modules/

@@ -1,0 +1,47 @@
+LotCaster - Start Here
+======================
+
+This is the one canonical LotCaster folder:
+C:\Users\Gage\Documents\Codex\LotCaster
+
+Start LotCaster:
+1. Double-click 1-START-LOTCASTER.cmd.
+2. Use Chrome or Microsoft Edge for inventory and Facebook workflows.
+3. Sign in when requested.
+
+Install or repair the desktop icon:
+1. Double-click 2-INSTALL-DESKTOP-ICON.cmd.
+2. The desktop shortcut will always launch this folder.
+
+Chrome or Edge extension:
+1. Open the browser's Extensions page and enable Developer mode.
+2. Choose Load unpacked.
+3. Select C:\Users\Gage\Documents\Codex\LotCaster\facebook-helper
+4. After LotCaster updates, press Reload on that extension once.
+
+Daily workflow:
+1. Start LotCaster.
+2. Refresh Inventory and wait for verified pricing.
+3. Confirm the listing price and dealer-fee treatment.
+4. Build the listing packet.
+5. Review every field and photo before manually publishing.
+
+Run a system check:
+1. Double-click 3-CHECK-LOTCASTER.cmd.
+2. Wait for the green "passed every local system check" message.
+
+Important folders:
+- public: LotCaster screen and browser files.
+- facebook-helper: the Chrome/Edge helper extension.
+- data: local inventory, settings, and encrypted session state.
+- docs: product decisions and implementation notes.
+- supabase: database migration source.
+- tests: automated reliability checks.
+
+Security:
+- Never publish or email the data folder.
+- Never place a Supabase secret/service-role key in this folder.
+- The publishable Supabase key is safe for the app; secret keys are not.
+
+Legacy backup:
+C:\Users\Gage\Documents\Codex\LotCaster-Legacy-2026-07-23

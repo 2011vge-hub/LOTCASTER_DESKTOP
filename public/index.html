@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0f766e" />
+    <title>LotCaster</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="stylesheet" href="/styles.css?v=27" />
+  </head>
+  <body>
+    <section id="authScreen" class="auth-screen">
+      <form id="authForm" class="auth-panel">
+        <div class="auth-logo-crop">
+          <img class="auth-logo" src="/lotcaster-logo.png?v=2" alt="" />
+        </div>
+        <strong class="auth-brand-name">LotCaster</strong>
+        <p class="eyebrow">Inventory broadcast workspace</p>
+        <h1 id="authTitle">Secure setup</h1>
+        <p id="authIntro" class="auth-intro">Create the owner account for this installation.</p>
+        <label id="ownerNameLabel">
+          Owner name
+          <input id="authName" autocomplete="name" />
+        </label>
+        <label>
+          Email
+          <input id="authEmail" type="email" autocomplete="username" required />
+        </label>
+        <label>
+          Password
+          <div class="password-control">
+            <input id="authPassword" type="password" autocomplete="new-password" minlength="10" required />
+            <button id="togglePasswordButton" class="password-toggle" type="button">Show</button>
+          </div>
+        </label>
+        <label id="rememberDeviceLabel" class="checkbox-row auth-remember">
+          <input id="authRememberDevice" type="checkbox" />
+          Remember this personal device for 30 days
+        </label>
+        <button id="authSubmit" class="primary" type="submit">Create Owner Account</button>
+        <button id="forgotPasswordButton" class="text-button" type="button">Forgot password?</button>
+        <p id="authMessage" class="auth-message" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <div id="appShell" hidden>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Dealer social inventory assistant</p>
+        <h1>LotCaster</h1>
+      </div>
+      <div class="account-bar">
+        <div>
+          <strong id="accountName"></strong>
+          <small id="licenseStatus"></small>
+        </div>
+        <button id="logoutButton" class="topbar-button" type="button">Sign Out</button>
+        <button id="installButton" class="icon-button" hidden title="Install app" aria-label="Install app">+</button>
+      </div>
+    </header>
+
+    <main>
+      <nav class="workspace-tabs" aria-label="Workspace views">
+        <button id="inventoryTab" class="workspace-tab active" type="button">Inventory</button>
+        <button id="postingTab" class="workspace-tab" type="button">Posting Center</button>
+        <button id="teamTab" class="workspace-tab" type="button" hidden>Team Dashboard</button>
+        <button id="helpTab" class="workspace-tab" type="button">Training &amp; Help</button>
+        <button id="accessTab" class="workspace-tab" type="button" hidden>Manage Access</button>
+      </nav>
+
+      <div id="inventoryView">
+      <section id="inventoryControls" class="controls">
+        <label>
+          Inventory Source
+          <input id="inventoryUrl" inputmode="url" autocomplete="url" />
+        </label>
+        <label>
+          Dealer doc fee
+          <input id="docFee" placeholder="789" inputmode="decimal" />
+        </label>
+        <label>
+          Dealership
+          <input id="dealershipName" autocomplete="organization" />
+        </label>
+        <label>
+          City / area
+          <input id="city" placeholder="Optional" autocomplete="address-level2" />
+        </label>
+        <label class="wide">
+          Dealership footer / disclaimer
+          <textarea id="listingFooter" rows="3"></textarea>
+        </label>
+        <label class="checkbox-row wide">
+          <input id="sourcePriceIncludesDocFee" type="checkbox" />
+          Website/source prices already include the dealer doc fee
+        </label>
+        <div class="source-tools wide">
+          <div>
+            <strong>Source presets</strong>
+            <p id="sourceNote">Save or switch the dealer inventory source before importing.</p>
+          </div>
+          <div class="source-actions">
+            <button id="walkerSourceButton" class="secondary" type="button">Use Walker</button>
+            <button id="saveSourceButton" class="secondary" type="button">Save Source</button>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="autoImportButton" class="primary" type="button">Import Inventory</button>
+          <button id="scrapeButton" class="primary">Refresh Inventory</button>
+          <a id="openInventoryLink" class="secondary" target="_blank" rel="noreferrer">Open Inventory Source</a>
+          <a class="secondary" href="/api/export.csv">Export CSV</a>
+          <a id="autoCsvLink" class="secondary disabled-link" href="/api/auto-import.csv">Latest Import CSV</a>
+        </div>
+        <div class="manual-panel wide">
+          <div>
+            <strong>Quick add one vehicle</strong>
+            <p>Use this when an inventory source is unavailable. Add an authorized vehicle record and save it locally.</p>
+          </div>
+          <label>
+            Vehicle title
+            <input id="manualTitle" placeholder="2022 Chevrolet Silverado 1500 LT" />
+          </label>
+          <label>
+            Price
+            <input id="manualPrice" placeholder="34995" inputmode="numeric" />
+          </label>
+          <label>
+            Mileage
+            <input id="manualMileage" placeholder="42100" inputmode="numeric" />
+          </label>
+          <label>
+            VIN
+            <input id="manualVin" placeholder="Optional" />
+          </label>
+          <label>
+            Stock #
+            <input id="manualStock" placeholder="Optional" />
+          </label>
+          <label>
+            Vehicle page URL
+            <input id="manualUrl" placeholder="Paste authorized vehicle link" inputmode="url" />
+          </label>
+          <label>
+            Photo URL
+            <input id="manualImage" placeholder="Optional image link" inputmode="url" />
+          </label>
+          <label>
+            Category / body type
+            <select id="manualBodyType">
+              <option value="unknown">Infer automatically</option>
+              <option value="car">Car</option>
+              <option value="truck">Truck</option>
+              <option value="suv">SUV</option>
+              <option value="van">Van</option>
+            </select>
+          </label>
+          <div class="actions">
+            <button id="manualButton" class="secondary" type="button">Save Vehicle</button>
+          </div>
+        </div>
+        <div class="import-panel wide">
+          <div>
+            <strong>Import authorized inventory data</strong>
+            <p>Use CSV when available. For unsupported websites, copy the visible inventory page and paste it here.</p>
+          </div>
+          <a class="secondary" href="/inventory-template.csv" download>Download Template</a>
+          <label class="file-label">
+            CSV file
+            <input id="importFile" type="file" accept=".csv,text/csv" />
+          </label>
+          <label>
+            Paste box
+            <textarea id="importText" rows="4" placeholder="Paste CSV text, or copy visible listings from Cars.com, CarGurus, or another dealer inventory page."></textarea>
+          </label>
+        </div>
+        <div class="actions wide">
+          <button id="importButton" class="secondary" type="button">Import CSV</button>
+          <button id="pageImportButton" class="secondary" type="button">Import Pasted Page</button>
+        </div>
+      </section>
+
+      <section class="summary" aria-live="polite">
+        <div>
+          <span id="vehicleCount">0</span>
+          <small>active vehicles</small>
+        </div>
+        <div>
+          <span id="newCount">0</span>
+          <small>new since last import</small>
+        </div>
+        <div>
+          <span id="removedCount">0</span>
+          <small>removed</small>
+        </div>
+        <div>
+          <span id="postedCount">0</span>
+          <small>marked posted</small>
+        </div>
+      </section>
+
+      <section class="filters">
+        <div class="search-wrap">
+          <input id="searchInput" type="search" placeholder="Search year, make, model, VIN, stock" />
+        </div>
+        <select id="statusFilter" aria-label="Filter by status">
+          <option value="unposted">Ready to prepare</option>
+          <option value="posted">Marked posted</option>
+          <option value="active">Active vehicles</option>
+          <option value="new">New only</option>
+          <option value="removed">Removed vehicles</option>
+          <option value="all">All records</option>
+        </select>
+      </section>
+
+      <p id="statusMessage" class="status"></p>
+      <section id="vehicleGrid" class="vehicle-grid" aria-label="Vehicle results"></section>
+      </div>
+
+      <section id="postingView" class="posting-center" hidden>
+        <div class="access-heading">
+          <div>
+            <p class="eyebrow">Daily posting workflow</p>
+            <h2>Posting Center</h2>
+          </div>
+          <span id="postingSourceBadge" class="master-badge">Inventory</span>
+        </div>
+        <section class="posting-scorecards">
+          <button id="queueUnassignedCard" type="button"><span id="queueUnassignedCount">0</span><small>need owner</small></button>
+          <button id="queuePrepCard" type="button"><span id="queuePrepCount">0</span><small>need details</small></button>
+          <button id="queueReadyCard" type="button"><span id="queueReadyCount">0</span><small>ready to post</small></button>
+          <button id="queuePostedCard" type="button"><span id="queuePostedCount">0</span><small>posted</small></button>
+          <button id="queueOverdueCard" type="button"><span id="queueOverdueCount">0</span><small>overdue</small></button>
+        </section>
+        <div class="posting-worklist">
+          <section>
+            <h3>Priority queue</h3>
+            <div id="postingQueueList" class="posting-queue-list"></div>
+          </section>
+          <section>
+            <h3>Salesperson snapshot</h3>
+            <div id="postingPeopleList" class="posting-people-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="teamView" class="team-view" hidden>
+        <div class="access-heading">
+          <div>
+            <p class="eyebrow">Dealership workflow</p>
+            <h2>Team Dashboard</h2>
+          </div>
+          <span class="master-badge">Managers</span>
+        </div>
+        <p class="access-note">Create real local sign-in accounts for managers and salespeople, assign vehicles from Inventory, and review who prepared or marked each vehicle posted.</p>
+        <div class="team-summary">
+          <div><span id="teamAssignedCount">0</span><small>assigned</small></div>
+          <div><span id="teamPreparedCount">0</span><small>prepared</small></div>
+          <div><span id="teamPostedCount">0</span><small>posted</small></div>
+          <div><span id="teamUnassignedCount">0</span><small>unassigned</small></div>
+        </div>
+        <form id="teamUserForm" class="team-user-form">
+          <label>
+            Team member name
+            <input id="teamUserName" required />
+          </label>
+          <label>
+            Email
+            <input id="teamUserEmail" type="email" required />
+          </label>
+          <label>
+            Role
+            <select id="teamUserRole">
+              <option value="salesperson">Salesperson</option>
+              <option value="manager">Manager</option>
+            </select>
+          </label>
+          <label id="teamPasswordField">
+            Temporary password
+            <input id="teamUserPassword" type="password" minlength="8" required />
+          </label>
+          <button class="primary" type="submit">Create Login</button>
+        </form>
+        <p id="teamStatus" class="status"></p>
+        <div class="team-dashboard-grid">
+          <section>
+            <h3>Team performance</h3>
+            <div id="teamMemberList" class="team-member-list"></div>
+          </section>
+          <section>
+            <h3>Recent activity</h3>
+            <div id="teamActivityList" class="team-activity-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="helpView" class="help-view" hidden>
+        <div class="help-heading">
+          <p class="eyebrow">LotCaster training</p>
+          <h2>Training &amp; Help</h2>
+          <p>Use LotCaster to prepare accurate listing packets and track dealership posting work. Final publishing always remains a manual user action.</p>
+        </div>
+        <div class="help-grid">
+          <article>
+            <h3>Salesperson quick start</h3>
+            <ol>
+              <li>Find an assigned or ready vehicle.</li>
+              <li>Open its Listing Packet.</li>
+              <li>Resolve any missing-field warnings.</li>
+              <li>Copy the approved details and photos.</li>
+              <li>Review the destination form and publish manually.</li>
+              <li>Return to LotCaster and mark the vehicle posted.</li>
+            </ol>
+          </article>
+          <article>
+            <h3>Manager quick start</h3>
+            <ol>
+              <li>Confirm the authorized Inventory Source.</li>
+              <li>Import or refresh inventory.</li>
+              <li>Review the import result and warnings.</li>
+              <li>Spot-check pricing, mileage, categories, and photos.</li>
+              <li>Export CSV for backup or review.</li>
+            </ol>
+          </article>
+          <article>
+            <h3>Daily posting checklist</h3>
+            <ul>
+              <li>Refresh inventory before preparing listings.</li>
+              <li>Verify price, mileage, VIN, stock number, and category.</li>
+              <li>Use clear photos that belong to the selected vehicle.</li>
+              <li>Review the dealership footer and listing description.</li>
+              <li>Mark completed work posted in LotCaster.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Listing best practices</h3>
+            <ul>
+              <li>Use the generated title and keep facts consistent.</li>
+              <li>Lead with the best exterior photo.</li>
+              <li>Avoid unsupported claims or outdated pricing.</li>
+              <li>Keep contact and availability language dealership-approved.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Compliance reminders</h3>
+            <ul>
+              <li>Verify every listing before publishing.</li>
+              <li>Use only inventory data and photos your dealership is authorized to use.</li>
+              <li>LotCaster prepares information; it does not publish listings or control social accounts.</li>
+              <li>The user manually completes the final posting step.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>What not to do</h3>
+            <ul>
+              <li>Do not share Facebook passwords with LotCaster.</li>
+              <li>Do not automate buyer messages or account actions.</li>
+              <li>Do not publish without checking vehicle availability.</li>
+              <li>Do not reuse photos from a different vehicle.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section id="accessView" class="access-view" hidden>
+        <div class="access-heading">
+          <div>
+            <p class="eyebrow">Master dealer console</p>
+            <h2>Manage Access</h2>
+          </div>
+          <span class="master-badge">Master only</span>
+        </div>
+        <p class="access-note">This registry is the verified control foundation. Suspended dealers will be enforced remotely once dealer installations connect to the hosted LotCaster licensing service.</p>
+        <form id="dealerForm" class="dealer-form">
+          <label>
+            Dealership
+            <input id="dealerName" required />
+          </label>
+          <label>
+            Owner email
+            <input id="dealerEmail" type="email" required />
+          </label>
+          <label>
+            Plan
+            <select id="dealerPlan">
+              <option value="pilot">Pilot</option>
+              <option value="solo">Solo</option>
+              <option value="team">Team</option>
+            </select>
+          </label>
+          <label>
+            Access expiration
+            <input id="dealerExpiresAt" type="date" />
+          </label>
+          <label class="wide">
+            Notes
+            <input id="dealerNotes" />
+          </label>
+          <button class="primary" type="submit">Add Dealer</button>
+        </form>
+        <p id="accessStatus" class="status"></p>
+        <div id="dealerList" class="dealer-list"></div>
+      </section>
+    </main>
+
+    <template id="vehicleTemplate">
+      <article class="vehicle-card">
+        <div class="photo"></div>
+        <div class="vehicle-body">
+          <div class="vehicle-title-row">
+            <h2></h2>
+            <span class="badge"></span>
+          </div>
+          <dl class="facts"></dl>
+          <div class="assignment-summary"></div>
+          <div class="assignment-controls" hidden>
+            <select class="assignee-select" aria-label="Assign salesperson"></select>
+            <input class="assignment-due" type="date" aria-label="Assignment due date" />
+            <button class="assign-button secondary" type="button">Save Assignment</button>
+          </div>
+          <div class="card-actions">
+            <button class="facebook primary">Build Listing Packet</button>
+            <button class="posted-toggle secondary">Mark Posted</button>
+            <button class="copy secondary">Copy Description</button>
+            <a class="details" target="_blank" rel="noreferrer">Details</a>
+            <a class="photo-link secondary" target="_blank" rel="noreferrer">Open Photo</a>
+          </div>
+          <textarea class="listing" readonly></textarea>
+        </div>
+      </article>
+    </template>
+
+    <dialog id="facebookDialog" class="posting-dialog">
+      <div class="posting-header">
+        <div>
+          <p class="eyebrow">Listing Builder</p>
+          <h2 id="postingTitle">Vehicle Listing Packet</h2>
+        </div>
+        <button id="closePostingButton" class="icon-button" type="button" aria-label="Close posting sheet">&times;</button>
+      </div>
+      <p class="posting-note">LotCaster prepares listing information only. Verify accuracy and authorization, review every field, and manually complete the final posting step. LotCaster does not publish listings or control Facebook accounts.</p>
+      <div id="requiredChecklist" class="required-checklist" aria-live="polite"></div>
+      <div class="vehicle-detail-editor">
+        <label>
+          Facebook category
+          <select id="postingBodyType">
+            <option value="Car/Truck">Car/Truck</option>
+          </select>
+        </label>
+        <label>
+          Body style
+          <input id="postingBodyStyle" list="bodyStyleOptions" placeholder="Sedan, coupe, pickup truck..." />
+          <datalist id="bodyStyleOptions">
+            <option value="Sedan"></option>
+            <option value="Coupe"></option>
+            <option value="Hatchback"></option>
+            <option value="Convertible"></option>
+            <option value="Wagon"></option>
+            <option value="SUV"></option>
+            <option value="Truck"></option>
+            <option value="Van"></option>
+            <option value="Minivan"></option>
+          </datalist>
+        </label>
+        <label>
+          Exterior color
+          <input id="postingExteriorColor" placeholder="Example: Summit White" />
+        </label>
+        <label>
+          Interior color
+          <input id="postingInteriorColor" placeholder="Example: Jet Black" />
+        </label>
+        <label>
+          Fuel type
+          <input id="postingFuelType" list="fuelTypeOptions" placeholder="Gasoline, diesel, hybrid..." />
+          <datalist id="fuelTypeOptions">
+            <option value="Gasoline"></option>
+            <option value="Diesel"></option>
+            <option value="Hybrid"></option>
+            <option value="Electric"></option>
+            <option value="Plug-In Hybrid"></option>
+            <option value="Flex Fuel"></option>
+          </datalist>
+        </label>
+      </div>
+      <div id="postingFields" class="posting-fields"></div>
+      <div id="postingPhotos" class="posting-photos" aria-label="Best available vehicle photos"></div>
+      <label>
+        Custom Facebook description
+        <textarea id="postingDescription" rows="9" placeholder="Write the dealership-approved description that should be carried into Facebook."></textarea>
+      </label>
+      <div class="posting-actions">
+        <button id="saveBodyTypeButton" class="primary" type="button">Save Listing Details</button>
+        <button id="copyPostingButton" class="secondary" type="button">Copy Description</button>
+        <button id="copyPacketButton" class="secondary" type="button">Copy Full Listing Packet</button>
+        <a id="postingPhotoLink" class="secondary" target="_blank" rel="noreferrer">Open Vehicle Photo</a>
+        <button id="openFacebookButton" class="primary" type="button">Open Facebook Workflow</button>
+      </div>
+      <p id="facebookHelperStatus" class="helper-status"></p>
+      <button id="checkHelperButton" class="secondary helper-check" type="button">Check Experimental Helper</button>
+      <p class="helper-location">The optional helper is experimental. Review everything before publishing.</p>
+    </dialog>
+    </div>
+
+    <script src="/app.js?v=52" type="module"></script>
+  </body>
+</html>

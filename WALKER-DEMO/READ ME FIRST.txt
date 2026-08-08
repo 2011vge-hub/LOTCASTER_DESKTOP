@@ -1,0 +1,23 @@
+LOTCASTER — WALKER DEMO
+=======================
+
+This is the only folder you need during the Walker demonstration.
+
+1. Double-click: 1 - START LOTCASTER.cmd
+2. Sign in to LotCaster.
+3. Confirm the LotCaster Facebook Helper reports version 1.8.0 or newer.
+4. Click Refresh Inventory and wait for the completion message.
+5. Open one vehicle and build its listing packet.
+6. Review every price, field, and photo before any manual publication.
+
+If something looks wrong:
+
+1. Do not publish the listing.
+2. Double-click: 2 - CHECK LOTCASTER.cmd
+3. Save the exact message shown by LotCaster.
+
+Working application location:
+C:\Users\Gage\Documents\Codex\LotCaster
+
+Older copies are backups. Do not launch them.
+

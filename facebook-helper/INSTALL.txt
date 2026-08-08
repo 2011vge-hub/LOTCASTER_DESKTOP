@@ -1,0 +1,22 @@
+LOTCASTER EXPERIMENTAL LISTING HELPER 1.8.0
+
+1. Open Edge and go to edge://extensions, or Chrome and go to chrome://extensions.
+2. Turn on Developer mode in the upper-right corner.
+3. Click Load unpacked.
+4. Select this facebook-helper folder.
+5. Refresh LotCaster.
+
+After an update, close every open Facebook Marketplace tab, click Reload on the
+extension card, refresh LotCaster, and verify that LotCaster reports the new
+helper version. Existing Facebook tabs keep the old helper code until closed.
+The helper can attempt a maximum of 8 authorized listing photos.
+
+Version 1.8.0 loads AutoTrader dealership inventory in verified 25-vehicle
+pages because AutoTrader now redirects the old 100-record address.
+
+This helper is experimental and may assist with form fields, but never presses Publish.
+After Facebook opens, choose listing type Car/Truck manually. LotCaster waits for
+the vehicle form, lets Facebook finish VIN decoding, then corrects Year and Make
+before filling dependent fields. It uses exact field labels and never interacts
+with Listing location.
+Verify every field and photo, then complete the final posting step manually.

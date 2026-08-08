@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "LotCaster Experimental Listing Helper",
+  "version": "1.8.0",
+  "description": "Experimentally assists with a reviewed LotCaster listing packet. The user verifies and publishes manually.",
+  "permissions": ["tabs", "scripting"],
+  "host_permissions": [
+    "http://localhost:5173/*",
+    "http://127.0.0.1:5173/*",
+    "https://www.facebook.com/*",
+    "https://*.fbcdn.net/*",
+    "https://*/*",
+    "http://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost:5173/*",
+        "http://127.0.0.1:5173/*"
+      ],
+      "js": ["local-app.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://www.facebook.com/marketplace/create/vehicle*"],
+      "js": ["facebook-form.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
