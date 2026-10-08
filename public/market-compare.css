@@ -1,0 +1,36 @@
+/* LotCaster Market Compare v1 */
+#conditionFilter { min-width: 155px; }
+.market-zip-input { width: 118px; }
+.market-compare-dialog { width: min(1040px, 94vw); }
+.market-compare-body { display: grid; gap: 1rem; }
+.market-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: .75rem;
+}
+.market-summary-grid > div {
+  border: 1px solid var(--border, #d7dee7);
+  border-radius: 12px;
+  padding: .85rem;
+  background: var(--panel, #fff);
+}
+.market-summary-grid small { display: block; opacity: .7; margin-bottom: .35rem; }
+.market-summary-grid strong { font-size: 1.05rem; }
+.market-compare-meta { margin: 0; opacity: .8; }
+.market-comp-list { display: grid; gap: .65rem; max-height: 52vh; overflow: auto; }
+.market-comp-row {
+  border: 1px solid var(--border, #d7dee7);
+  border-radius: 12px;
+  padding: .9rem;
+  display: grid;
+  gap: .45rem;
+}
+.market-comp-row > div { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+.market-comp-row p, .market-comp-row small { margin: 0; }
+.market-comp-row .compact-button { justify-self: start; margin-top: .25rem; }
+.market-loading { padding: 1rem 0; }
+.market-error { color: #9b1c1c; }
+@media (max-width: 640px) {
+  .market-comp-row > div { align-items: flex-start; flex-direction: column; gap: .25rem; }
+  .market-zip-input { width: 100%; }
+}
