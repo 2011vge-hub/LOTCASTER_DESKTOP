@@ -1,0 +1,46 @@
+name: Market Compare Checks
+
+on:
+  push:
+    branches:
+      - feature/market-compare-v1
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  syntax-and-load:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check browser helper JavaScript syntax
+        shell: pwsh
+        run: |
+          node --check facebook-helper/background.js
+          node --check facebook-helper/local-app.js
+          node --check facebook-helper/market-compare.js
+
+      - name: Parse PowerShell wrapper
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path '.\Start-LotCaster-Market.ps1'),
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            exit 1
+          }
+
+      - name: Load LotCaster market wrapper without listening
+        shell: powershell
+        run: |
+          .\Start-LotCaster-Market.ps1 -NoListen
