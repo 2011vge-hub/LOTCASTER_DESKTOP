@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "LotCaster Experimental Listing Helper",
-  "version": "1.8.0",
-  "description": "Experimentally assists with a reviewed LotCaster listing packet. The user verifies and publishes manually.",
+  "version": "1.9.0",
+  "description": "Experimentally assists with reviewed LotCaster listing packets and browser-driven market comparison. The user verifies and publishes manually.",
   "permissions": ["tabs", "scripting"],
   "host_permissions": [
     "http://localhost:5173/*",
@@ -21,7 +21,7 @@
         "http://localhost:5173/*",
         "http://127.0.0.1:5173/*"
       ],
-      "js": ["local-app.js"],
+      "js": ["local-app.js", "market-compare.js"],
       "run_at": "document_start"
     },
     {
