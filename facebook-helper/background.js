@@ -40,6 +40,13 @@ async function captureRenderedInventory(url) {
       // instead and combine them before sending them back to LotCaster.
       sourceUrl.searchParams.delete("numRecords");
       sourceUrl.searchParams.delete("firstRecord");
+      // Walker previously stored a used-only dealer URL. Market Compare needs
+      // the same inventory workspace to contain all retail conditions, so the
+      // helper upgrades Walker's request even on the first refresh after the
+      // feature is installed.
+      if (configuredDealerId === "100009092") {
+        sourceUrl.searchParams.set("listingType", "NEW,USED,CERTIFIED");
+      }
     }
 
     const pages = [];
