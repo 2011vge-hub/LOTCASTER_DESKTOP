@@ -6,10 +6,10 @@ Set fso = CreateObject("Scripting.FileSystemObject")
 
 root = fso.GetParentFolderName(WScript.ScriptFullName)
 healthUrl = "http://127.0.0.1:5173/api/auth/status"
-appUrl = "http://127.0.0.1:5173/?app=lotcaster-v50"
+appUrl = "http://127.0.0.1:5173/?app=lotcaster-market-v1"
 
 If Not IsAppReady(healthUrl) Then
-  command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File """ & root & "\Start-InventoryTool.ps1"" -Port 5173"
+  command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File """ & root & "\Start-LotCaster-Market.ps1"" -Port 5173"
   shell.Run command, 0, False
 
   For attempt = 1 To 40
