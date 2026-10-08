@@ -5,6 +5,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .catch((error) => sendResponse({ error: error.message }));
     return true;
   }
+  if (message?.type === "lotcaster-market-compare" && message.url) {
+    captureMarketComparison(message.url)
+      .then(sendResponse)
+      .catch((error) => sendResponse({ error: error.message }));
+    return true;
+  }
   if (message?.type !== "walker-fetch-image" || !message.url) return;
   fetch(message.url)
     .then((response) => {
@@ -79,6 +85,165 @@ async function captureRenderedInventory(url) {
     return { url: pages[0].url, html: pages[0].html, pages };
   } finally {
     await Promise.all(sourceTabs.map((tab) => tab?.id ? chrome.tabs.remove(tab.id).catch(() => {}) : null));
+  }
+}
+
+async function captureMarketComparison(url) {
+  let marketTab = null;
+  try {
+    marketTab = await chrome.tabs.create({ url, active: false });
+    await waitForTab(marketTab.id, 45000);
+    // Give client-rendered inventory state a short moment to settle after the
+    // browser reports the initial document complete.
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    const results = await chrome.scripting.executeScript({
+      target: { tabId: marketTab.id },
+      func: () => {
+        function text(value) {
+          if (value == null) return "";
+          if (typeof value === "string" || typeof value === "number") return String(value).trim();
+          if (typeof value === "object") return text(value.name ?? value.label ?? value.value ?? "");
+          return "";
+        }
+        function number(value) {
+          const found = text(value).replace(/[^0-9.]/g, "");
+          return found ? Number(found) : 0;
+        }
+        function priceOf(item) {
+          const candidates = [
+            item?.pricingDetail?.salePrice,
+            item?.pricingDetail?.displayPrice,
+            item?.pricing?.salePrice,
+            item?.pricing?.displayPrice,
+            item?.salePrice,
+            item?.displayPrice,
+            item?.price
+          ];
+          for (const value of candidates) {
+            const amount = number(value);
+            if (amount > 0) return amount;
+          }
+          return 0;
+        }
+        function mileageOf(item) {
+          const candidates = [item?.mileage, item?.odometer, item?.mileageFromOdometer?.value, item?.specifications?.mileage];
+          for (const value of candidates) {
+            const amount = number(value);
+            if (amount > 0) return Math.round(amount);
+          }
+          return 0;
+        }
+        function collectFeatureStrings(value, depth = 0, out = new Set()) {
+          if (depth > 4 || value == null || out.size > 30) return out;
+          if (typeof value === "string") {
+            const clean = value.trim();
+            if (clean.length > 2 && clean.length < 90) out.add(clean);
+            return out;
+          }
+          if (Array.isArray(value)) {
+            value.forEach((item) => collectFeatureStrings(item, depth + 1, out));
+            return out;
+          }
+          if (typeof value === "object") {
+            Object.entries(value).forEach(([key, child]) => {
+              if (/(feature|option|package|highlight|equipment|amenit)/i.test(key) || Array.isArray(child)) {
+                collectFeatureStrings(child, depth + 1, out);
+              }
+            });
+          }
+          return out;
+        }
+        function dealerOf(item) {
+          return text(item?.dealer?.name || item?.seller?.name || item?.dealerName || item?.owner?.name || item?.sellerName);
+        }
+        function itemUrl(item) {
+          const raw = text(item?.url || item?.vehicleDetailsUrl || item?.vdpUrl || item?.permalink);
+          try { return raw ? new URL(raw, location.origin).href : ""; } catch { return ""; }
+        }
+
+        const nextData = document.querySelector("#__NEXT_DATA__");
+        if (!nextData?.textContent) {
+          return { url: location.href, listings: [], error: "AutoTrader loaded, but structured market listing data was not available." };
+        }
+        let root;
+        try {
+          root = JSON.parse(nextData.textContent);
+        } catch {
+          return { url: location.href, listings: [], error: "AutoTrader market data could not be decoded." };
+        }
+
+        const queue = [root];
+        const listings = [];
+        const seen = new Set();
+        let visited = 0;
+        while (queue.length && visited < 60000 && listings.length < 150) {
+          const node = queue.shift();
+          visited += 1;
+          if (!node || typeof node !== "object") continue;
+          if (Array.isArray(node)) {
+            node.forEach((child) => child && typeof child === "object" && queue.push(child));
+            continue;
+          }
+
+          const vin = text(node.vin || node.VIN || node.vehicleIdentificationNumber);
+          const year = text(node.year || node.modelYear);
+          const make = text(node?.make?.name || node.make || node.makeName);
+          const model = text(node?.model?.name || node.model || node.modelName);
+          const hasIdentity = /^(19|20)\d{2}$/.test(year) && make && model;
+          const hasListingSignal = vin.length === 17 || node.listingId || node.id || node.pricingDetail || node.salePrice || node.displayPrice;
+          if (hasIdentity && hasListingSignal) {
+            const listingId = text(node.listingId || node.id || vin || `${year}-${make}-${model}-${mileageOf(node)}-${priceOf(node)}`);
+            if (listingId && !seen.has(listingId)) {
+              seen.add(listingId);
+              const trim = text(node?.trim?.name || node.trim || node?.atTrim?.name);
+              const listingType = text(node.listingType || node.condition || node.inventoryType);
+              const title = text(node.title || node.name || node.vehicleTitle) || [listingType, year, make, model, trim].filter(Boolean).join(" ");
+              const features = [...collectFeatureStrings({
+                features: node.features,
+                options: node.options,
+                packages: node.packages,
+                highlights: node.highlights,
+                specifications: node.specifications
+              })].filter((value) => !/^(yes|no|true|false)$/i.test(value));
+              listings.push({
+                listingId,
+                title,
+                year,
+                make,
+                model,
+                trim,
+                listingType,
+                price: priceOf(node),
+                mileage: mileageOf(node),
+                vin,
+                dealer: dealerOf(node),
+                distance: text(node.distance || node.distanceFromSearchLocation || node?.dealer?.distance),
+                fuelType: text(node.fuelType || node.fuel || node?.specifications?.fuelType),
+                driveType: text(node.driveType || node.drivetrain || node?.specifications?.driveType),
+                engine: text(node.engine || node.engineDescription || node?.specifications?.engine),
+                transmission: text(node.transmission || node?.specifications?.transmission),
+                exteriorColor: text(node.exteriorColor || node?.color?.exteriorColor),
+                interiorColor: text(node.interiorColor || node?.color?.interiorColor),
+                features,
+                url: itemUrl(node)
+              });
+              continue;
+            }
+          }
+
+          Object.values(node).forEach((child) => {
+            if (child && typeof child === "object") queue.push(child);
+          });
+        }
+        return { url: location.href, listings };
+      }
+    });
+    const result = results?.[0]?.result;
+    if (!result) throw new Error("AutoTrader opened, but LotCaster could not read the market results.");
+    if (result.error) throw new Error(result.error);
+    return result;
+  } finally {
+    if (marketTab?.id) await chrome.tabs.remove(marketTab.id).catch(() => {});
   }
 }
 
