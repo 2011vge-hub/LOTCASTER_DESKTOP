@@ -7,8 +7,8 @@ function announceWalkerHelper() {
     delete document.documentElement.dataset.walkerFacebookHelper;
     return;
   }
-  document.documentElement.dataset.walkerFacebookHelper = "1.8.0";
-  window.postMessage({ type: "walker-facebook-helper-ready", version: "1.8.0" }, window.location.origin);
+  document.documentElement.dataset.walkerFacebookHelper = "1.9.0";
+  window.postMessage({ type: "walker-facebook-helper-ready", version: "1.9.0" }, window.location.origin);
 }
 
 announceWalkerHelper();
