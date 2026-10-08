@@ -23,6 +23,7 @@ jobs:
         run: |
           node --check facebook-helper/background.js
           node --check facebook-helper/local-app.js
+          node --check facebook-helper/mixed-inventory.js
           node --check facebook-helper/market-compare.js
 
       - name: Parse PowerShell wrapper
