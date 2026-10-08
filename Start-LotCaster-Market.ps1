@@ -1,5 +1,6 @@
 param(
-  [int]$Port = 5173
+  [int]$Port = 5173,
+  [switch]$NoListen
 )
 
 $ErrorActionPreference = "Stop"
@@ -119,6 +120,8 @@ try {
   }
   if ($changed) { Write-JsonFile $StoreFile $store }
 } catch {}
+
+if ($NoListen) { return }
 
 $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Any, $Port)
 $listener.Start()
