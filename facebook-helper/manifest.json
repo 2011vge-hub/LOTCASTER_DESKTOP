@@ -21,7 +21,7 @@
         "http://localhost:5173/*",
         "http://127.0.0.1:5173/*"
       ],
-      "js": ["local-app.js", "market-compare.js"],
+      "js": ["local-app.js", "mixed-inventory.js", "market-compare.js"],
       "run_at": "document_start"
     },
     {
