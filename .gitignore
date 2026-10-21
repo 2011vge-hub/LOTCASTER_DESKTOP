@@ -26,3 +26,8 @@ releases/*
 *.zip
 *.log
 node_modules/
+
+
+# Python audit caches
+__pycache__/
+*.pyc

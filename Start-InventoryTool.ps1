@@ -23,6 +23,7 @@ $HostedSessionsFile = Join-Path $DataDir "hosted-sessions.dat"
 $SupabaseUrl = if ($env:LOTCASTER_SUPABASE_URL) { $env:LOTCASTER_SUPABASE_URL.TrimEnd("/") } else { "https://onnhjezwunjxrngjybbf.supabase.co" }
 $SupabasePublishableKey = if ($env:LOTCASTER_SUPABASE_PUBLISHABLE_KEY) { $env:LOTCASTER_SUPABASE_PUBLISHABLE_KEY } else { "sb_publishable_x7-LPtuNbKE9gb0PPsFe4A_WagTZ4eI" }
 $HostedAuthEnabled = $env:LOTCASTER_AUTH_MODE -ne "local"
+$HostedOwnerEmail = if ($env:LOTCASTER_OWNER_EMAIL) { $env:LOTCASTER_OWNER_EMAIL.Trim().ToLower() } else { "" }
 
 $DefaultSettings = [ordered]@{
   dealershipName = "Walker Chevrolet"
@@ -325,7 +326,7 @@ function Get-HostedAuthSummary($Request) {
     return [ordered]@{
       setupRequired = -not (Test-Path $HostedSetupMarkerFile)
       authenticated = $false
-      loginEmail = "2011vge@gmail.com"
+      loginEmail = $HostedOwnerEmail
       hosted = $true
     }
   }
@@ -1655,7 +1656,10 @@ function Handle-Request($Request) {
     $name = Clean-Text $body.name
     $email = (Clean-Text $body.email).ToLower()
     $password = [string]$body.password
-    if (-not $name -or $email -ne "2011vge@gmail.com" -or $password.Length -lt 10) {
+    if (-not $HostedOwnerEmail) {
+      return Send-Json $Request.stream @{ error = "Set LOTCASTER_OWNER_EMAIL before hosted master setup." } 503
+    }
+    if (-not $name -or $email -ne $HostedOwnerEmail -or $password.Length -lt 10) {
       return Send-Json $Request.stream @{ error = "Use the authorized LotCaster Master email and a password of at least 10 characters." } 400
     }
     try {
@@ -1672,7 +1676,7 @@ function Handle-Request($Request) {
           hosted = $true
           confirmationRequired = $true
           loginEmail = $email
-          message = "Check 2011vge@gmail.com for the confirmation email, then return here and sign in."
+          message = "Check the configured owner inbox for the confirmation email, then return here and sign in."
         }
       }
       $remember = [bool]$body.rememberDevice
@@ -2331,3 +2335,4 @@ while ($true) {
     $client.Close()
   }
 }
+

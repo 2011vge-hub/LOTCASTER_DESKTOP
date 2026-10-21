@@ -15,7 +15,7 @@ $html = @'
     <dt class="invoicePrice"><span class="price-label">Doc Fee</span></dt><dd class="invoicePrice"><span class="price-value">$789</span></dd>
     <dt class="final-price internetPrice"><span class="price-label">Walker Sale Price</span></dt><dd class="final-price internetPrice"><span class="price-value">$52,777</span></dd>
   </dl>
-  <div data-vin="3GTUUEEL9RG256670">Stock # TZ213345A</div>
+  <div data-vin="TESTV1N0000000003">Stock # TZ213345A</div>
 </div>
 '@
 $vehicles = @(Parse-DealerComVehicles $html "https://www.walkerchevrolet.com/used-inventory/index.htm")
@@ -30,7 +30,7 @@ $description = Build-MarketplaceText $vehicles[0] $settings
 if ($description -notmatch 'Price: \$52,777' -or $description -match '55,765') { throw "Generated listing description contains the wrong price." }
 
 $autoTraderHtml = @'
-<script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"__eggsState":{"inventory":{"781249239":{"id":781249239,"vin":"3GTUUEEL9RG256670","year":2024,"make":{"name":"GMC"},"model":{"name":"Sierra 1500"},"trim":{"name":"AT4"},"listingType":"USED","stockId":"TZ213345A","mileage":{"value":"33,373"},"pricingDetail":{"salePrice":51988,"displayPrice":52777,"dealerFeesTotal":789}}},"dealerdetails.urls":{"results":{"781249239":"/cars-for-sale/vehicle/781249239"}}}}}}</script>
+<script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"__eggsState":{"inventory":{"781249239":{"id":781249239,"vin":"TESTV1N0000000004","year":2024,"make":{"name":"GMC"},"model":{"name":"Sierra 1500"},"trim":{"name":"AT4"},"listingType":"USED","stockId":"TZ213345A","mileage":{"value":"33,373"},"pricingDetail":{"salePrice":51988,"displayPrice":52777,"dealerFeesTotal":789}}},"dealerdetails.urls":{"results":{"781249239":"/cars-for-sale/vehicle/781249239"}}}}}}</script>
 '@
 $autoTraderVehicles = @(Parse-AutoTraderVehicles $autoTraderHtml "https://www.autotrader.com/")
 Assert-Equal $autoTraderVehicles.Count 1 "AutoTrader structured payload should produce one vehicle."
@@ -45,3 +45,4 @@ Assert-Equal (Test-LikelyVehicleImageUrl 'https://www.autotrader.com/cars-for-sa
 $notIncluded = Normalize-Vehicle ([ordered]@{title='2024 GMC Sierra 1500 AT4';vin='TESTVIN1234567890';price='52777'}) 'https://example.com'
 Assert-Equal (Get-PostingPriceInfo $notIncluded $settings).postingText '$53,566' "Only the portal-configured $789 fee should be added when no inclusion signal exists."
 Write-Host "Pricing regression checks passed."
+

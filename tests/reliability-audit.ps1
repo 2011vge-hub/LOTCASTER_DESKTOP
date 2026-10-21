@@ -76,9 +76,10 @@ foreach ($facebookRoadLabel in @("car or truck", "cars or trucks", "cars and tru
 Assert ($facebookHelperText -match 'exactOptionMatches\(fieldCurrentValue\(control, field\), desired\)') "Facebook listing-type confirmation does not verify the exact selected value."
 
 $detailFixture = @'
-<script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"__eggsState":{"birf":{"pageData":{"page":{"vehicle":{"vin":"1C4SJVDP0RS100001","fuelType":{"name":"Gasoline"},"images":{"sources":[{"src":"https://images.autotrader.com/vehicle/wagoneer-1.jpg"},{"src":"https://images.autotrader.com/vehicle/wagoneer-2.jpg"},{"src":"https://images.autotrader.com/vehicle/wagoneer-3.jpg"}]}}}}}}}}}</script>
+<script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"__eggsState":{"birf":{"pageData":{"page":{"vehicle":{"vin":"TESTV1N0000000005","fuelType":{"name":"Gasoline"},"images":{"sources":[{"src":"https://images.autotrader.com/vehicle/wagoneer-1.jpg"},{"src":"https://images.autotrader.com/vehicle/wagoneer-2.jpg"},{"src":"https://images.autotrader.com/vehicle/wagoneer-3.jpg"}]}}}}}}}}}</script>
 '@
 $detail = Parse-AutoTraderDetailHtml $detailFixture "https://www.autotrader.com/cars-for-sale/vehicle/123"
 Assert (@($detail.photos).Count -eq 3) "Rendered AutoTrader detail gallery did not preserve all valid vehicle photos."
 
 Write-Host "Reliability audit checks passed."
+
