@@ -79,3 +79,7 @@ Scope remained limited to the two LotCaster repositories. No deployment, merge, 
 - Static inspection confirms CI invokes current-tree and history scans, and the desktop owner address is no longer embedded in source.
 - Desktop PowerShell pricing and reliability suites were not executed because `pwsh` is unavailable in this environment.
 - Authoritative all-ref remote history, binary/image OCR, unknown surname provenance, live Marketplace transport, alert delivery, and customer messaging remain unverified. Independent scanning and human provenance review are still required.
+
+## 2026-10-22 — changed-code delta review
+
+Desktop main remains unchanged at `373fee004d981f6333926ef809d0553482872633`; the review branch remains one commit ahead and zero commits behind. No repetitive fixes or tests were run. The unresolved PowerShell execution and authoritative-history review gates remain unchanged.
