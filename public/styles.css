@@ -38,7 +38,7 @@ body {
 }
 
 .auth-screen::before {
-  background: url("/lotcaster-logo.png?v=2") center / min(780px, 78vw) auto no-repeat;
+  background: url("/icon.svg?v=20261108-brand") center / min(320px, 50vw) auto no-repeat;
   content: "";
   inset: 0;
   opacity: 0.13;
@@ -90,15 +90,16 @@ body {
 }
 
 .auth-logo-crop {
-  height: 165px;
+  height: 140px;
   margin: 0 auto;
   overflow: hidden;
-  width: 260px;
+  width: 140px;
 }
 
 .auth-logo {
-  height: auto;
-  max-width: 260px;
+  display: block;
+  height: 128px;
+  max-width: 128px;
   width: 100%;
 }
 
